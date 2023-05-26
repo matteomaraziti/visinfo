@@ -13,21 +13,20 @@
     <h1 class="title">foglie e pesciolini</h1>
 </div>
 
-    <div id="div_altitudine" class="Column"></div>
-
+    <div id="f_p" class="Column"></div>
 
 <script>
 
 // set the dimensions and margins of the graph
 var margin = {top: 15, right: 50, bottom: 70, left: 80},
-    width = 500 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    width = 700 - margin.left - margin.right,
+    height = 700 - margin.top - margin.bottom;
 
 //----------------------------------------------------------------------- 4 Grafico ---------------------------------------------------------------------------------------------------
 
 
 // append the svg object to the body of the page
-var svg4 = d3.select("#div_altitudine")
+var svg4 = d3.select("#f_p")
   .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -36,112 +35,36 @@ var svg4 = d3.select("#div_altitudine")
           "translate(" + margin.left + "," + margin.top + ")");
 
 // Parse the Data
-d3.json("https://raw.githubusercontent.com/FTocci/VIS-INFO-2023/main/cities.json", function(data) {
+d3.json("https://raw.githubusercontent.com/matteomaraziti/visinfo/main/data.json", function(data) {
 
-// X axis
-var x = d3.scaleBand()
-  .range([ 0, width ])
-  .domain(data.map(function(d) { return d.Nome; }))
-  .padding(0.2);
+// Add X axis
+var x = d3.scaleLinear()
+  .domain([0, 25])
+  .range([ 0, width]);
 svg4.append("g")
-  .attr("class", "x-axis")
-  .attr("transform", "translate(0," + height + ")")
-  .call(d3.axisBottom(x))
-  .selectAll("text")
-    .attr("transform", "translate(-10,0)rotate(-45)")
-    .style("text-anchor", "end");
-
+  .call(d3.axisBottom(x));
 // Add Y axis
 var y = d3.scaleLinear()
-  .domain([0, 250])
+  .domain([0, 25])
   .range([ height, 0]);
 svg4.append("g")
   .call(d3.axisLeft(y));
 
-// Bars
-svg4.selectAll("rect")
+
+// Aggiungi gli elementi utilizzando i dati dal file JSON
+svg4.selectAll("circle")
   .data(data)
   .enter()
-  .append("rect")
-	.attr("class", "mybar")
-    .attr("x", function(d) { return x(d.Nome); })
-    .attr("y", function(d) { return y(d.Altitudine); })
-    .attr("width", x.bandwidth())
-    .attr("height", function(d) { return height - y(d.Altitudine); })
-    .attr("fill", "#69b3a2")
-    .on("mouseover", function(d,i,nodes) {
-      d3.select(this).attr("fill", "DarkCyan"); // Cambia il colore della barra quando ci passi con il mouse sopra
-      var currentBar = d3.select(nodes[i]);
-	  var xPosition = parseFloat(currentBar.attr("x")) + x.bandwidth() / 2;
-	  var yPosition = parseFloat(currentBar.attr("y")) - 5;
-	  svg4.append("text")
-        .attr("class", "valore-barra")
-        .attr("x", xPosition)
-		.attr("y", yPosition)
-        .attr("text-anchor", "middle")
-        .text(d.Altitudine);
-    })
-    .on("mouseout", function(d) {
-      d3.select(this).attr("fill", "#69b3a2"); // Ripristina il colore originale della barra quando il mouse esce
-      svg4.select(".valore-barra").remove(); // Rimuovi il testo quando il mouse esce dalla barra
-    });
-	
-	d3.select("#div_altitudine")
-			.on("click", function() {
-		 // Ordina i dati per popolazione in modo crescente
-		data.sort(function(a, b) {
-			return a.Altitudine - b.Altitudine;
-		});
-
-		// Aggiorna il dominio dell'asse X
-		x.domain(data.map(function(d) { return d.Nome; }));
-
-		// Aggiorna la posizione delle barre con transizioni animate
-		svg.selectAll(".mybar")
-			.transition()
-			.duration(750)
-			.attr("x", function(d) { return x(d.Nome); });
-
-		// Aggiorna l'asse X con transizione animata
-		svg.select(".x-axis")
-			.transition()
-			.duration(750)
-			.call(d3.axisBottom(x));
-		
-		svg2.selectAll(".mybar")
-			.transition()
-			.duration(750)
-			.attr("x", function(d) { return x(d.Nome); });
-
-		// Aggiorna l'asse X con transizione animata
-		svg2.select(".x-axis")
-			.transition()
-			.duration(750)
-			.call(d3.axisBottom(x));
-		
-		svg3.selectAll(".mybar")
-			.transition()
-			.duration(750)
-			.attr("x", function(d) { return x(d.Nome); });
-
-		// Aggiorna l'asse X con transizione animata
-		svg3.select(".x-axis")
-			.transition()
-			.duration(750)
-			.call(d3.axisBottom(x));
-			
-		svg4.selectAll(".mybar")
-			.transition()
-			.duration(750)
-			.attr("x", function(d) { return x(d.Nome); });
-
-		// Aggiorna l'asse X con transizione animata
-		svg4.select(".x-axis")
-			.transition()
-			.duration(750)
-			.call(d3.axisBottom(x));
-	})
-})
+  .append("circle")
+  .attr("cx", function(d) {
+	return 10; // Supponendo che le coordinate x siano presenti nel file JSON
+  })
+  .attr("cy", function(d) {
+	return 5; // Supponendo che le coordinate y siano presenti nel file JSON
+  })
+  .attr("r", 100) // Specifica il raggio del cerchio
+  .attr("fill", "blue"); // Specifica il colore di riempimento dell'elemento
+});
 
 </script>
 
