@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+	<!-- Load d3.js -->
+	<script src="https://d3js.org/d3.v4.js"></script>
+	
+	
+	
+	<!-- Load css -->
+	<link rel="stylesheet" href="mystyle.css">
+</head>
+<body>
+<div class="title-container">
+    <h1 class="title">Foglie Pesci</h1>
+</div>
+
+<div id="f_p" class="Column"></div>
+
+ 
+
+<script>
+
+// set the dimensions and margins of the graph
+var margin = {top: 15, right: 50, bottom: 70, left: 80},
+    width = 700 - margin.left - margin.right,
+    height = 700 - margin.top - margin.bottom;
+
+
+//----------------------------------------------------------------------- 1 Grafico ---------------------------------------------------------------------------------------------------
+
+
+// append the svg object to the body of the page
+var svg = d3.select("#f_p")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+  
+
+// Parse the Data
+d3.json("https://raw.githubusercontent.com/matteomaraziti/visinfo/main/data.json", function(data) {
+
+// X axis
+var x = d3.scaleLinear()
+  .range([ 0, width ])
+  .domain([0, 25])
+svg.append("g")
+  .attr("class", "x-axis")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x))
+  .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end");
+
+// Add Y axis
+var y = d3.scaleLinear()
+  .domain([0, 25])
+  .range([ height, 0]);
+svg.append("g")
+  .call(d3.axisLeft(y));
+
+
+svg.selectAll("image.fish")
+  .data(data)
+  .enter()
+  .append("image")
+  .attr("class", "fish")
+  .attr("x", function(d) { return x(d.x1) ; }) // Posizione orizzontale del quadrato (offset per centrarlo rispetto al cerchio)
+  .attr("y", function(d) { return y(d.y1) ; }) // Posizione verticale del quadrato (offset per centrarlo rispetto al cerchio)
+  .attr("xlink:href", "fish.png") // Percorso dell'immagine del pesce
+  .attr("width", 10) // Larghezza dell'immagine del pesce
+  .attr("height", 10); // Altezza dell'immagine del pesce
+
+
+var clickCount = 0;
+
+svg.selectAll("image.leaf") // Seleziona le immagini di foglia
+  .data(data)
+  .enter()
+  .append("image")
+  .attr("class", "leaf")
+  .attr("x", function(d) { return x(d.x1) -5; }) // Posizione orizzontale dell'immagine di foglia
+  .attr("y", function(d) { return y(d.y1) -2; }) // Posizione verticale dell'immagine di foglia
+  .attr("xlink:href", "leaf.png") // Percorso dell'immagine di foglia
+  .attr("width", 20) // Larghezza dell'immagine di foglia
+  .attr("height", 20) // Altezza dell'immagine di foglia
+  .on("click", function(d) {
+	// Define target positions based on click count
+	clickCount = (clickCount + 1) % 3;
+	
+	if (clickCount === 1) {	
+		// Funzione per spostare il cerchio alla posizione finale con un'animazione
+		d3.selectAll("image.leaf") // Seleziona il cerchio corrente
+			.each(function(d) {
+				var leaf = d3.select(this);
+				leaf.transition()
+				.duration(2000)
+				.attr("x", x(d.x2) -5)
+				.attr("y", y(d.y2) -2);
+			});
+		setTimeout(function() {
+			svg.selectAll("image.fish")
+				.each(function(d) {
+					d3.select(this)
+						.transition()
+						.duration(1000)
+						.attr("x", x(d.x2) )
+						.attr("y", y(d.y2) );
+				});
+		}, 2000);
+	
+	} else if (clickCount === 2) {
+		// Funzione per spostare il cerchio alla posizione finale con un'animazione
+		d3.selectAll("image.leaf") // Seleziona il cerchio corrente
+			.each(function(d) {
+				var circle = d3.select(this);
+				circle.transition()
+				.duration(2000)
+				.attr("x", x(d.x3) -5)
+				.attr("y", y(d.y3) -2);
+			});
+		setTimeout(function() {
+			svg.selectAll("image.fish")
+				.each(function(d) {
+					d3.select(this)
+						.transition()
+						.duration(1000)
+						.attr("x", x(d.x3) )
+						.attr("y", y(d.y3) );
+				});
+		}, 2000);
+			
+	} else {
+		d3.selectAll("image.leaf") // Seleziona il cerchio corrente
+			.each(function(d) {
+				var circle = d3.select(this);
+				circle.transition()
+				.duration(2000)
+				.attr("x", x(d.x1) -5)
+				.attr("y", y(d.y1) -2);
+			});
+		setTimeout(function() {
+			svg.selectAll("image.fish")
+				.each(function(d) {
+					d3.select(this)
+						.transition()
+						.duration(1000)
+						.attr("x", x(d.x1) )
+						.attr("y", y(d.y1) );
+				});
+		}, 2000);
+			
+	}
+	
+	
+	
+	
+
+	  
+	
+	  
+  
+	
+  });
+
+});	
+
+
+</script>
+
+</body>
+</html>
